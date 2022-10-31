@@ -44,13 +44,34 @@ def create_project(project: Project = Body(example=EXAMPLE.CREATE_PROJECT_REQUES
 
 @router.put(
     "/",
-    response_model=project_handler.UpdateProjectResponse
+    response_model=project_handler.UpdateProjectResponse,
+    responses={
+        200: {
+            "description": "Project successfully updated",
+            "content": {
+                "application/json": {
+                    "example": EXAMPLE.UPDATE_PROJECT
+                    }
+                }
+            }
+        }
 )
 def update_project(project: Project):
     return project_handler.update_project(project)
 
 @router.put(
-    "/poster/{project_id}"
+    "/poster/{project_id}",
+    response_model=project_handler.UpdateProjectResponse,
+    responses={
+        200: {
+            "description": "Project Poster successfully created",
+            "content": {
+                "application/json": {
+                    "example": EXAMPLE.UPDATE_PROJECT_POSTER
+                    }
+                }
+            }
+        }
 )
 def update_project_poster(project_id: str, poster: UploadFile) :
     # posterbase64 = base64.b64encode(file.file.read())
