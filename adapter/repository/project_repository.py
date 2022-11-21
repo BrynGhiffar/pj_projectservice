@@ -1,11 +1,8 @@
 from bson import ObjectId
 from bson.errors import InvalidId
 from pymongo import ReturnDocument
-from adapter.repository.config.config import get_database
 from domain.project.project_entity import Project
 from pymongo.errors import ServerSelectionTimeoutError
-
-project_collection = lambda: get_database()["project"]
 
 class ProjectRepositoryError:
 
