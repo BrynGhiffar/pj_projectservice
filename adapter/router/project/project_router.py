@@ -1,16 +1,28 @@
 from fastapi import APIRouter, Body, UploadFile
 import adapter.router.project.example as EXAMPLE
-from adapter.router.project import project_handler
-import base64
-import io
-from starlette.responses import StreamingResponse
+from adapter.router.project.project_handler import ProjectHandler
+from domain.project.project_service import ProjectService
+from adapter.repository.project_repository import ProjectRepository
+from adapter.repository.config.config import get_database
+from adapter.router.project.project_handler import FindProjectByIdResponse, \
+                                                    CreateProjectResponse, \
+                                                    UpdateProjectPosterResponse, \
+                                                    UpdateProjectResponse
 
 from domain.project.project_entity import Project
+
 router = APIRouter()
+project_handler = ProjectHandler(
+    project_service=ProjectService(
+        project_repository=ProjectRepository(
+            project_repository_config=lambda: get_database()["project"]
+        )
+    )
+)
 
 @router.get(
         "/{project_id}",
-        response_model=project_handler.FindProjectByIdResponse,
+        response_model=FindProjectByIdResponse,
         responses={
             200: {
                 "description": "Project found",
@@ -27,7 +39,7 @@ def find_project_by_id(project_id: str):
 
 @router.post(
         "/",
-        response_model=project_handler.CreateProjectResponse,
+        response_model=CreateProjectResponse,
         responses={
             200: {
                 "description": "Project successfully created",
@@ -44,7 +56,7 @@ def create_project(project: Project = Body(example=EXAMPLE.CREATE_PROJECT_REQUES
 
 @router.put(
     "/",
-    response_model=project_handler.UpdateProjectResponse,
+    response_model=UpdateProjectResponse,
     responses={
         200: {
             "description": "Project successfully updated",
@@ -61,7 +73,7 @@ def update_project(project: Project):
 
 @router.put(
     "/poster/{project_id}",
-    response_model=project_handler.UpdateProjectResponse,
+    response_model=UpdateProjectResponse,
     responses={
         200: {
             "description": "Project Poster successfully created",
