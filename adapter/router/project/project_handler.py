@@ -4,7 +4,7 @@ from fastapi.responses import JSONResponse, StreamingResponse
 from fastapi.encoders import jsonable_encoder
 from domain.project.project_service import ProjectService
 
-from domain.project.project_service import ProjectServiceError
+from domain.project.project_service import ProjectServiceError, ProjectServiceErrorExtra
 from domain.project.project_entity import Project
 from pydantic import BaseModel
 import base64
@@ -24,6 +24,10 @@ class UpdateProjectResponse(BaseModel):
 class UpdateProjectPosterResponse(BaseModel):
     message: str
     poster_base64: str | None
+
+class FindProjectByUserIdResponse(BaseModel):
+    message: str
+    projects: list[Project] | None
 
 class ProjectHandler:
     
@@ -47,12 +51,18 @@ class ProjectHandler:
 
     def create_project(self, project: Project) -> JSONResponse:
         res = self.project_service.create_project(project)
-        project = res
-        create_project_response = jsonable_encoder(CreateProjectResponse(
-            message="project was successully created",
-            project=project
-        ))
-        return JSONResponse(content=create_project_response, status_code=200, media_type="application/json")
+        if isinstance(res, ProjectServiceErrorExtra):
+            content = jsonable_encoder(CreateProjectResponse(
+                message=f"{res.name}: {res.message}. {res.extra_message}"
+            ))
+            return JSONResponse(content=content, status_code=500, media_type="application/json")
+        else:
+            project = res
+            create_project_response = jsonable_encoder(CreateProjectResponse(
+                message="project was successully created",
+                project=project
+            ))
+            return JSONResponse(content=create_project_response, status_code=200, media_type="application/json")
 
     def update_project(self, project: Project) -> JSONResponse:
         res = self.project_service.update_project(project)
@@ -94,3 +104,12 @@ class ProjectHandler:
             return JSONResponse(content=content, status_code=404, media_type="application/json")
         else:
             return StreamingResponse(content=res, status_code=200, media_type="image/jpeg")
+    
+    def find_project_by_user_id(self, user_id: str) -> JSONResponse:
+        
+        res = self.project_service.find_project_by_user_id(user_id)
+        content = jsonable_encoder(FindProjectByUserIdResponse(
+            message="below are projects found",
+            projects=res
+        ))
+        return JSONResponse(content=content, status_code=200, media_type="application/json")

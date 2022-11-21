@@ -3,18 +3,44 @@ from bson.errors import InvalidId
 from pymongo import ReturnDocument
 from adapter.repository.config.config import get_database
 from domain.project.project_entity import Project
+from pymongo.errors import ServerSelectionTimeoutError
 
 project_collection = lambda: get_database()["project"]
+
+class ProjectRepositoryError:
+
+    def __init__(self):
+        self.name = "GENERIC_PROJECT_REPOSITORY_ERROR"
+        self.message = "An unknown error occurred, please contact developer"
+
+class ProjectRepositoryErrorExtra(ProjectRepositoryError):
+
+    def __init__(self):
+        super().__init__()
+        self.extra_message = "Something must have gone wrong"
+    
+class TimeoutConnectionError(ProjectRepositoryErrorExtra):
+
+    def __init__(self, extra_message: str):
+        super().__init__()
+        self.name = "PROJECT_REPOSITORY_TIMEOUT_ERROR"
+        self.message = "Connection with the database has timed out"
+        self.extra_message = extra_message
 
 class ProjectRepository:
 
     def __init__(self, project_repository_config):
         self.get_project_collection = project_repository_config
 
-    def create_project(self, project: Project) -> Project | None:
+    def create_project(self, project: Project) -> Project \
+                                                    | ProjectRepositoryError \
+                                                    | ProjectRepositoryErrorExtra:
         project_dict = project.dict()
         del project_dict["project_id"]
-        res = self.get_project_collection().insert_one(project_dict)
+        try:
+            res = self.get_project_collection().insert_one(project_dict)
+        except ServerSelectionTimeoutError as e:
+            return TimeoutConnectionError(extra_message=e._message)
         project.project_id = str(res.inserted_id)
         return project
 
@@ -44,5 +70,14 @@ class ProjectRepository:
             return project
         except InvalidId:
             return None
-        
+    
+    def find_project_by_user(self, user_id: str) -> list[Project] | None:
+        res = self.get_project_collection().find({"members": user_id})
+        if not res:
+            return None
+        ret = []
+        for project in res:
+            project["project_id"] = str(project["_id"])
+            ret.append(Project.parse_obj(project))
+        return ret[::-1]
 

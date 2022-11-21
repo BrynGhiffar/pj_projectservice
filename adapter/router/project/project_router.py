@@ -6,7 +6,6 @@ from adapter.repository.project_repository import ProjectRepository
 from adapter.repository.config.config import get_database
 from adapter.router.project.project_handler import FindProjectByIdResponse, \
                                                     CreateProjectResponse, \
-                                                    UpdateProjectPosterResponse, \
                                                     UpdateProjectResponse
 
 from domain.project.project_entity import Project
@@ -93,3 +92,7 @@ def update_project_poster(project_id: str, poster: UploadFile) :
 @router.get("/poster/{project_id}")
 def find_project_poster_by_id(project_id: str):
     return project_handler.find_project_poster_by_id(project_id)
+
+@router.get("/user/{user_id}")
+def find_project_by_user_id(user_id: str):
+    return project_handler.find_project_by_user_id(user_id)
