@@ -36,7 +36,13 @@ class ProjectHandler:
 
     def find_project_by_id(self, project_id: str) -> JSONResponse:
         res = self.project_service.find_project_by_id(project_id)
-        if isinstance(res, ProjectServiceError):
+        if isinstance(res, ProjectServiceErrorExtra):
+            content = jsonable_encoder(CreateProjectResponse(
+                message=f"{res.name}: {res.message}. {res.extra_message}"
+            ))
+            return JSONResponse(content=content, status_code=500, media_type="application/json")
+        
+        elif isinstance(res, ProjectServiceError):
             update_project_response = jsonable_encoder(FindProjectByIdResponse(
                 message=f"{res.name}: {res.message}"
             ))
@@ -56,6 +62,12 @@ class ProjectHandler:
                 message=f"{res.name}: {res.message}. {res.extra_message}"
             ))
             return JSONResponse(content=content, status_code=500, media_type="application/json")
+        
+        elif isinstance(res, ProjectServiceError):
+            update_project_response = jsonable_encoder(FindProjectByIdResponse(
+                message=f"{res.name}: {res.message}"
+            ))
+            return JSONResponse(content=update_project_response, status_code=400, media_type="application/json")
         else:
             project = res
             create_project_response = jsonable_encoder(CreateProjectResponse(
@@ -66,8 +78,14 @@ class ProjectHandler:
 
     def update_project(self, project: Project) -> JSONResponse:
         res = self.project_service.update_project(project)
-        if isinstance(res, ProjectServiceError):
-            update_project_response = jsonable_encoder(UpdateProjectResponse(
+        if isinstance(res, ProjectServiceErrorExtra):
+            content = jsonable_encoder(CreateProjectResponse(
+                message=f"{res.name}: {res.message}. {res.extra_message}"
+            ))
+            return JSONResponse(content=content, status_code=500, media_type="application/json")
+        
+        elif isinstance(res, ProjectServiceError):
+            update_project_response = jsonable_encoder(FindProjectByIdResponse(
                 message=f"{res.name}: {res.message}"
             ))
             return JSONResponse(content=update_project_response, status_code=400, media_type="application/json")
@@ -83,8 +101,14 @@ class ProjectHandler:
         posterbase64 = str(base64.b64encode(poster.file.read()))[2:-1]
         res = self.project_service.update_project_poster(project_id, posterbase64)
 
-        if isinstance(res, ProjectServiceError):
-            update_project_response = jsonable_encoder(UpdateProjectPosterResponse(
+        if isinstance(res, ProjectServiceErrorExtra):
+            content = jsonable_encoder(CreateProjectResponse(
+                message=f"{res.name}: {res.message}. {res.extra_message}"
+            ))
+            return JSONResponse(content=content, status_code=500, media_type="application/json")
+        
+        elif isinstance(res, ProjectServiceError):
+            update_project_response = jsonable_encoder(FindProjectByIdResponse(
                 message=f"{res.name}: {res.message}"
             ))
             return JSONResponse(content=update_project_response, status_code=400, media_type="application/json")
@@ -97,19 +121,37 @@ class ProjectHandler:
 
     def find_project_poster_by_id(self, project_id: str) -> StreamingResponse | JSONResponse:
         res = self.project_service.find_project_poster_by_id(project_id)
-        if isinstance(res, ProjectServiceError):
-            content = jsonable_encoder(UpdateProjectPosterResponse(
+        if isinstance(res, ProjectServiceErrorExtra):
+            content = jsonable_encoder(CreateProjectResponse(
+                message=f"{res.name}: {res.message}. {res.extra_message}"
+            ))
+            return JSONResponse(content=content, status_code=500, media_type="application/json")
+        
+        elif isinstance(res, ProjectServiceError):
+            update_project_response = jsonable_encoder(FindProjectByIdResponse(
                 message=f"{res.name}: {res.message}"
             ))
-            return JSONResponse(content=content, status_code=404, media_type="application/json")
+            return JSONResponse(content=update_project_response, status_code=400, media_type="application/json")
         else:
             return StreamingResponse(content=res, status_code=200, media_type="image/jpeg")
     
     def find_project_by_user_id(self, user_id: str) -> JSONResponse:
         
         res = self.project_service.find_project_by_user_id(user_id)
-        content = jsonable_encoder(FindProjectByUserIdResponse(
-            message="below are projects found",
-            projects=res
-        ))
-        return JSONResponse(content=content, status_code=200, media_type="application/json")
+        if isinstance(res, ProjectServiceErrorExtra):
+            content = jsonable_encoder(CreateProjectResponse(
+                message=f"{res.name}: {res.message}. {res.extra_message}"
+            ))
+            return JSONResponse(content=content, status_code=500, media_type="application/json")
+        
+        elif isinstance(res, ProjectServiceError):
+            update_project_response = jsonable_encoder(FindProjectByIdResponse(
+                message=f"{res.name}: {res.message}"
+            ))
+            return JSONResponse(content=update_project_response, status_code=400, media_type="application/json")
+        else:
+            content = jsonable_encoder(FindProjectByUserIdResponse(
+                message="below are projects found",
+                projects=res
+            ))
+            return JSONResponse(content=content, status_code=200, media_type="application/json")
