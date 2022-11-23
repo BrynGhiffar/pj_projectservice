@@ -43,6 +43,8 @@ class ProjectService:
 
     def find_project_by_id(self, project_id: str) -> Project | ProjectServiceError:
         project = self.project_repository.find_project_by_id(project_id)
+        if isinstance(project, TimeoutConnectionError):
+            return DatabaseConnectionError(project.extra_message)
         if not project:
             return ProjectNotFound(project_id)
         
@@ -58,13 +60,18 @@ class ProjectService:
 
     def update_project(self, project: Project) -> Project | ProjectServiceError:
         updated_project = self.project_repository.update_project(project)
+        if isinstance(updated_project, TimeoutConnectionError):
+            return DatabaseConnectionError(updated_project.extra_message)
+        
         if not updated_project:
             return ProjectNotFound(project.project_id)
         return updated_project
 
     def update_project_poster(self, project_id: str, poster_base64: str) -> str | ProjectServiceError:
         project = self.find_project_by_id(project_id)
-
+        if isinstance(project, TimeoutConnectionError):
+            return DatabaseConnectionError(project.extra_message)
+        
         if isinstance(project, ProjectNotFound):
             return ProjectNotFound(project_id)
 
@@ -79,6 +86,9 @@ class ProjectService:
     def find_project_poster_by_id(self, project_id: str) -> io.BytesIO | ProjectServiceError:
 
         project = self.find_project_by_id(project_id)
+        if isinstance(project, TimeoutConnectionError):
+            return DatabaseConnectionError(project.extra_message)
+        
         if isinstance(project, ProjectNotFound):
             return ProjectNotFound(project_id)
 
@@ -92,5 +102,8 @@ class ProjectService:
     
     def find_project_by_user_id(self, user_id: str) -> list[Project] | ProjectServiceError:
         projects = self.project_repository.find_project_by_user(user_id)
+        if isinstance(projects, TimeoutConnectionError):
+            return DatabaseConnectionError(projects.extra_message)
+        
         return projects
         

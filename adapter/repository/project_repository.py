@@ -41,10 +41,15 @@ class ProjectRepository:
         project.project_id = str(res.inserted_id)
         return project
 
-    def find_project_by_id(self, project_id: str) -> Project | None:
+    def find_project_by_id(self, project_id: str) -> Project\
+                                                    | ProjectRepositoryError \
+                                                    | ProjectRepositoryErrorExtra:
         try:
             _id = ObjectId(project_id)
-            res = self.get_project_collection().find_one({"_id": _id})
+            try:
+                res = self.get_project_collection().find_one({"_id": _id})
+            except ServerSelectionTimeoutError as e:
+                return TimeoutConnectionError(extra_message=e._message)
 
             if not res:
                 return None
@@ -56,10 +61,15 @@ class ProjectRepository:
         except InvalidId:
             return None
 
-    def update_project(self, project: Project) -> Project | None:
+    def update_project(self, project: Project) -> Project \
+                                                    | ProjectRepositoryError \
+                                                    | ProjectRepositoryErrorExtra:
         try:
             _id = ObjectId(project.project_id)
-            res = self.get_project_collection().find_one_and_replace({"_id": _id}, project.dict(), return_document=ReturnDocument.AFTER)
+            try:
+                res = self.get_project_collection().find_one_and_replace({"_id": _id}, project.dict(), return_document=ReturnDocument.AFTER)
+            except ServerSelectionTimeoutError as e:
+                return TimeoutConnectionError(extra_message=e._message)
             if not res:
                 return None
             res["project_id"] = str(res["_id"])
@@ -68,8 +78,13 @@ class ProjectRepository:
         except InvalidId:
             return None
     
-    def find_project_by_user(self, user_id: str) -> list[Project] | None:
-        res = self.get_project_collection().find({"members": user_id})
+    def find_project_by_user(self, user_id: str) -> list[Project] \
+                                                    | ProjectRepositoryError \
+                                                    | ProjectRepositoryErrorExtra:
+        try:
+            res = self.get_project_collection().find({"members": user_id})
+        except ServerSelectionTimeoutError as e:
+            return TimeoutConnectionError(extra_message=e._message)
         if not res:
             return None
         ret = []
