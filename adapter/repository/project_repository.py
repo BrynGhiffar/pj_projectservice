@@ -61,7 +61,9 @@ class ProjectRepository:
         except InvalidId:
             return None
 
-    def update_project(self, project: Project) -> Project | None:
+    def update_project(self, project: Project) -> Project \
+                                                    | ProjectRepositoryError \
+                                                    | ProjectRepositoryErrorExtra:
         try:
             _id = ObjectId(project.project_id)
             try:
@@ -76,7 +78,9 @@ class ProjectRepository:
         except InvalidId:
             return None
     
-    def find_project_by_user(self, user_id: str) -> list[Project] | None:
+    def find_project_by_user(self, user_id: str) -> list[Project] \
+                                                    | ProjectRepositoryError \
+                                                    | ProjectRepositoryErrorExtra:
         try:
             res = self.get_project_collection().find({"members": user_id})
         except ServerSelectionTimeoutError as e:
