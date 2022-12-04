@@ -68,7 +68,7 @@ class ProjectService:
         return updated_project
 
     def update_project_poster(self, project_id: str, poster_base64: str) -> str | ProjectServiceError:
-        project = self.find_project_by_id(project_id)
+        project = self.project_repository.find_project_by_id(project_id)
         if isinstance(project, TimeoutConnectionError):
             return DatabaseConnectionError(project.extra_message)
         
@@ -85,7 +85,7 @@ class ProjectService:
 
     def find_project_poster_by_id(self, project_id: str) -> io.BytesIO | ProjectServiceError:
 
-        project = self.find_project_by_id(project_id)
+        project = self.project_repository.find_project_by_id(project_id)
         if isinstance(project, TimeoutConnectionError):
             return DatabaseConnectionError(project.extra_message)
         

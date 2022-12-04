@@ -88,8 +88,11 @@ class ProjectRepository:
         if not res:
             return None
         ret = []
-        for project in res:
-            project["project_id"] = str(project["_id"])
-            ret.append(Project.parse_obj(project))
-        return ret[::-1]
+        try:
+            for project in res:
+                project["project_id"] = str(project["_id"])
+                ret.append(Project.parse_obj(project))
+            return ret[::-1]
+        except ServerSelectionTimeoutError as e:
+            return TimeoutConnectionError(extra_message=e._message)
 
