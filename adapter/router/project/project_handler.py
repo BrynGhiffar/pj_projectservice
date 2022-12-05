@@ -13,6 +13,10 @@ class FindProjectByIdResponse(BaseModel):
     message: str
     project: Project | None
 
+class FindProjectPosterByIdResponse(BaseModel):
+    message: str
+    project: Project | None
+
 class CreateProjectResponse(BaseModel):
     message: str
     project: Project | None
