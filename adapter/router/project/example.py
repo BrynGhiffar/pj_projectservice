@@ -18,7 +18,6 @@ FIND_PROJECT_POSTER_BY_ID_RESPONSE = {
     "github_link": "https://www.github.com/johnDoe/AwesomeProject"
 }
 
-
 CREATE_PROJECT_REQUEST_BODY = {
     "poster_image": "asldfqoiw498qpiadv",
     "report": "214puqcjq4mrpijt",
