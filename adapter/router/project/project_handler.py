@@ -147,7 +147,7 @@ class ProjectHandler:
             ))
             return JSONResponse(content=update_project_response, status_code=400, media_type="application/json")
         else:
-            return StreamingResponse(content=res, status_code=200, media_type="image/jpeg")
+            return StreamingResponse(content=io.BytesIO(res), status_code=200, media_type="image/jpg")
     
     def find_project_by_user_id(self, user_id: str) -> JSONResponse:
         
