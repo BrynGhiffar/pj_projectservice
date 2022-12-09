@@ -10,7 +10,7 @@ from adapter.router.project.project_handler import FindProjectByIdResponse, \
                                                     FindProjectPosterByIdResponse
 
 from domain.project.project_entity import Project
-from domain.notification.discord_notification import DiscordNotification
+from domain.notification.notification_service import NotificationService
 from adapter.discord.api import DiscordApi
 from adapter.discord.config import get_webhook
 
@@ -20,11 +20,11 @@ project_handler = ProjectHandler(
     project_service=ProjectService(
         project_repository=ProjectRepository(
             project_repository_config=lambda: get_database()["project"]
-        )
-    ),
-    discord_notification=DiscordNotification(
-        api=DiscordApi(
-            webhook_url = get_webhook()
+        ),
+        notification_service=NotificationService(
+            api=DiscordApi(
+                webhook_url = get_webhook()
+            )
         )
     )
 )

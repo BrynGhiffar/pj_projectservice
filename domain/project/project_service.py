@@ -1,6 +1,6 @@
 from adapter.repository.project_repository import ProjectRepository, TimeoutConnectionError
 from domain.project.project_entity import Project
-from domain.notification.discord_notification import DiscordNotification
+from domain.notification.notification_service import NotificationService
 import io, base64, binascii
 
 class ProjectServiceError:
@@ -39,9 +39,9 @@ class DatabaseConnectionError(ProjectServiceErrorExtra):
 
 class ProjectService:
 
-    def __init__(self, project_repository: ProjectRepository, discord_notification: DiscordNotification):
+    def __init__(self, project_repository: ProjectRepository, notification_service: NotificationService):
         self.project_repository = project_repository
-        self.discord_notification = discord_notification
+        self.notification_service = notification_service
 
     def find_project_by_id(self, project_id: str) -> Project | ProjectServiceError:
         project = self.project_repository.find_project_by_id(project_id)
@@ -57,11 +57,12 @@ class ProjectService:
         # for now projects could always be created
         project.poster_image = project.poster_image
         res = self.project_repository.create_project(project)
-        #Send Discord message
-        self.discord_notification.project_created_notification(project.project_id,project.members)
 
         if isinstance(res, TimeoutConnectionError):
             return DatabaseConnectionError(res.extra_message)
+        if not (res.project_id is None):
+            #Send Discord message
+            self.notification_service.send_project_created_notification(res.project_id, res.name, res.short_description, res.members)
         return res
 
     def update_project(self, project: Project) -> Project | ProjectServiceError:
