@@ -76,13 +76,13 @@ class ProjectService:
         if project is None:
             return ProjectNotFound(project_id)
 
-        project.poster_image = poster_base64
+        project.poster_image.base64 = poster_base64
 
         new_project = self.update_project(project)
         if isinstance(new_project, ProjectServiceError):
             return new_project
         
-        return new_project.poster_image
+        return new_project.poster_image.base64
 
     def find_project_poster_by_id(self, project_id: str) -> bytes | ProjectServiceError:
 
@@ -93,7 +93,7 @@ class ProjectService:
         if project is None:
             return ProjectNotFound(project_id)
 
-        image_str = project.poster_image\
+        image_str = project.poster_image.base64\
                         .removeprefix("data:image/jpeg;base64,")\
                         .removeprefix("data:application/octet-stream;base64,")\
                         .removeprefix("data:image/png;base64,")\
