@@ -13,6 +13,10 @@ class FindProjectByIdResponse(BaseModel):
     message: str
     project: Project | None
 
+class FindProjectPosterByIdResponse(BaseModel):
+    message: str
+    project: Project | None
+
 class CreateProjectResponse(BaseModel):
     message: str
     project: Project | None
@@ -38,13 +42,15 @@ class ProjectHandler:
         res = self.project_service.find_project_by_id(project_id)
         if isinstance(res, ProjectServiceErrorExtra):
             content = jsonable_encoder(CreateProjectResponse(
-                message=f"{res.name}: {res.message}. {res.extra_message}"
+                message=f"{res.name}: {res.message}. {res.extra_message}",
+                project=None
             ))
             return JSONResponse(content=content, status_code=500, media_type="application/json")
         
         elif isinstance(res, ProjectServiceError):
             update_project_response = jsonable_encoder(FindProjectByIdResponse(
-                message=f"{res.name}: {res.message}"
+                message=f"{res.name}: {res.message}",
+                project=None
             ))
             return JSONResponse(content=update_project_response, status_code=400, media_type="application/json")
         else:
@@ -59,13 +65,15 @@ class ProjectHandler:
         res = self.project_service.create_project(project)
         if isinstance(res, ProjectServiceErrorExtra):
             content = jsonable_encoder(CreateProjectResponse(
-                message=f"{res.name}: {res.message}. {res.extra_message}"
+                message=f"{res.name}: {res.message}. {res.extra_message}",
+                project=None
             ))
             return JSONResponse(content=content, status_code=500, media_type="application/json")
         
         elif isinstance(res, ProjectServiceError):
             update_project_response = jsonable_encoder(FindProjectByIdResponse(
-                message=f"{res.name}: {res.message}"
+                message=f"{res.name}: {res.message}",
+                project=None
             ))
             return JSONResponse(content=update_project_response, status_code=400, media_type="application/json")
         else:
@@ -80,13 +88,15 @@ class ProjectHandler:
         res = self.project_service.update_project(project)
         if isinstance(res, ProjectServiceErrorExtra):
             content = jsonable_encoder(CreateProjectResponse(
-                message=f"{res.name}: {res.message}. {res.extra_message}"
+                message=f"{res.name}: {res.message}. {res.extra_message}",
+                project=None
             ))
             return JSONResponse(content=content, status_code=500, media_type="application/json")
         
         elif isinstance(res, ProjectServiceError):
             update_project_response = jsonable_encoder(FindProjectByIdResponse(
-                message=f"{res.name}: {res.message}"
+                message=f"{res.name}: {res.message}",
+                project=None
             ))
             return JSONResponse(content=update_project_response, status_code=400, media_type="application/json")
         else:
@@ -103,13 +113,15 @@ class ProjectHandler:
 
         if isinstance(res, ProjectServiceErrorExtra):
             content = jsonable_encoder(CreateProjectResponse(
-                message=f"{res.name}: {res.message}. {res.extra_message}"
+                message=f"{res.name}: {res.message}. {res.extra_message}",
+                project=None
             ))
             return JSONResponse(content=content, status_code=500, media_type="application/json")
         
         elif isinstance(res, ProjectServiceError):
             update_project_response = jsonable_encoder(FindProjectByIdResponse(
-                message=f"{res.name}: {res.message}"
+                message=f"{res.name}: {res.message}",
+                project=None
             ))
             return JSONResponse(content=update_project_response, status_code=400, media_type="application/json")
         else:
@@ -123,30 +135,34 @@ class ProjectHandler:
         res = self.project_service.find_project_poster_by_id(project_id)
         if isinstance(res, ProjectServiceErrorExtra):
             content = jsonable_encoder(CreateProjectResponse(
-                message=f"{res.name}: {res.message}. {res.extra_message}"
+                message=f"{res.name}: {res.message}. {res.extra_message}",
+                project=None
             ))
             return JSONResponse(content=content, status_code=500, media_type="application/json")
         
         elif isinstance(res, ProjectServiceError):
             update_project_response = jsonable_encoder(FindProjectByIdResponse(
-                message=f"{res.name}: {res.message}"
+                message=f"{res.name}: {res.message}",
+                project=None
             ))
             return JSONResponse(content=update_project_response, status_code=400, media_type="application/json")
         else:
-            return StreamingResponse(content=res, status_code=200, media_type="image/jpeg")
+            return StreamingResponse(content=io.BytesIO(res), status_code=200, media_type="image/jpg")
     
     def find_project_by_user_id(self, user_id: str) -> JSONResponse:
         
         res = self.project_service.find_project_by_user_id(user_id)
         if isinstance(res, ProjectServiceErrorExtra):
             content = jsonable_encoder(CreateProjectResponse(
-                message=f"{res.name}: {res.message}. {res.extra_message}"
+                message=f"{res.name}: {res.message}. {res.extra_message}",
+                project=None
             ))
             return JSONResponse(content=content, status_code=500, media_type="application/json")
         
         elif isinstance(res, ProjectServiceError):
             update_project_response = jsonable_encoder(FindProjectByIdResponse(
-                message=f"{res.name}: {res.message}"
+                message=f"{res.name}: {res.message}",
+                project=None
             ))
             return JSONResponse(content=update_project_response, status_code=400, media_type="application/json")
         else:

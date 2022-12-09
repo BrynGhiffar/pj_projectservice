@@ -55,6 +55,7 @@ class ProjectService:
     def create_project(self, project: Project) -> Project | ProjectServiceErrorExtra:
 
         # for now projects could always be created
+        project.poster_image = project.poster_image
         res = self.project_repository.create_project(project)
         #Send Discord message
         self.discord_notification.project_created_notification(project.project_id,project.members)
@@ -69,7 +70,7 @@ class ProjectService:
             return DatabaseConnectionError(updated_project.extra_message)
         
         if not updated_project:
-            return ProjectNotFound(project.project_id)
+            return ProjectNotFound(project.project_id if not (project.project_id is None) else "None")
         return updated_project
 
     def update_project_poster(self, project_id: str, poster_base64: str) -> str | ProjectServiceError:
@@ -77,33 +78,37 @@ class ProjectService:
         if isinstance(project, TimeoutConnectionError):
             return DatabaseConnectionError(project.extra_message)
         
-        if isinstance(project, ProjectNotFound):
+        if project is None:
             return ProjectNotFound(project_id)
 
-        project.poster_image = poster_base64
+        project.poster_image.base64 = poster_base64
 
         new_project = self.update_project(project)
         if isinstance(new_project, ProjectServiceError):
             return new_project
         
-        return new_project.poster_image
+        return new_project.poster_image.base64
 
-    def find_project_poster_by_id(self, project_id: str) -> io.BytesIO | ProjectServiceError:
+    def find_project_poster_by_id(self, project_id: str) -> bytes | ProjectServiceError:
 
         project = self.project_repository.find_project_by_id(project_id)
         if isinstance(project, TimeoutConnectionError):
             return DatabaseConnectionError(project.extra_message)
         
-        if isinstance(project, ProjectNotFound):
+        if project is None:
             return ProjectNotFound(project_id)
 
-        image_str = project.poster_image
+        image_str = project.poster_image.base64\
+                        .removeprefix("data:image/jpeg;base64,")\
+                        .removeprefix("data:application/octet-stream;base64,")\
+                        .removeprefix("data:image/png;base64,")\
+                        .removeprefix("data:image/jpg;base64,")
 
         try:
-            image_bytes = io.BytesIO(base64.b64decode(image_str))
+            image_bytes = base64.b64decode(image_str)
+            return image_bytes
         except binascii.Error as _:
             return ProjectPosterEncodingError(project_id)
-        return image_bytes
     
     def find_project_by_user_id(self, user_id: str) -> list[Project] | ProjectServiceError:
         projects = self.project_repository.find_project_by_user(user_id)

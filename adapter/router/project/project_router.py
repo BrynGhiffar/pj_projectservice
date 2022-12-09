@@ -6,7 +6,9 @@ from adapter.repository.project_repository import ProjectRepository
 from adapter.repository.config.config import get_database
 from adapter.router.project.project_handler import FindProjectByIdResponse, \
                                                     CreateProjectResponse, \
-                                                    UpdateProjectResponse
+                                                    UpdateProjectResponse, \
+                                                    FindProjectPosterByIdResponse
+
 from domain.project.project_entity import Project
 from domain.notification.discord_notification import DiscordNotification
 from adapter.discord.api import DiscordApi
@@ -97,7 +99,20 @@ def update_project_poster(project_id: str, poster: UploadFile) :
     # return StreamingResponse(content=io.BytesIO(base64.b64decode(posterbase64)), media_type="image/jpeg")
     return project_handler.update_project_poster(project_id, poster)
 
-@router.get("/poster/{project_id}")
+@router.get(
+    "/poster/{project_id}", 
+    response_model=FindProjectPosterByIdResponse,
+    responses={
+            200: {
+                "description": "Project poster found",
+                "content": {
+                    "application/json": {
+                        "example": EXAMPLE.FIND_PROJECT_POSTER_BY_ID_RESPONSE
+                    }
+                }
+            }
+        }
+    )
 def find_project_poster_by_id(project_id: str):
     return project_handler.find_project_poster_by_id(project_id)
 
