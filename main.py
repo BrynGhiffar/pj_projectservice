@@ -19,8 +19,6 @@ app.include_router(
     prefix=f"{BASE_PATH}{VERSION_1}"
 )
 origins = [
-    "http://localhost:3000",
-    "http://localhost:8080",
     FE_URL
 ]
 
