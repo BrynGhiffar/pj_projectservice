@@ -115,6 +115,13 @@ class ProjectService:
         projects = self.project_repository.find_project_by_user(user_id)
         if isinstance(projects, TimeoutConnectionError):
             return DatabaseConnectionError(projects.extra_message)
+
+        return projects
+
+    def find_all_projects(self) -> list[Project] | ProjectServiceError:
+        projects = self.project_repository.find_all_projects()
+        if isinstance(projects, TimeoutConnectionError):
+            return DatabaseConnectionError(projects.extra_message)
         
         return projects
         

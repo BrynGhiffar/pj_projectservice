@@ -171,3 +171,26 @@ class ProjectHandler:
                 projects=res
             ))
             return JSONResponse(content=content, status_code=200, media_type="application/json")
+
+    def find_all_projects(self) -> JSONResponse:
+        
+        res = self.project_service.find_all_projects()
+        if isinstance(res, ProjectServiceErrorExtra):
+            content = jsonable_encoder(CreateProjectResponse(
+                message=f"{res.name}: {res.message}. {res.extra_message}",
+                project=None
+            ))
+            return JSONResponse(content=content, status_code=500, media_type="application/json")
+        
+        elif isinstance(res, ProjectServiceError):
+            update_project_response = jsonable_encoder(FindProjectByIdResponse(
+                message=f"{res.name}: {res.message}",
+                project=None
+            ))
+            return JSONResponse(content=update_project_response, status_code=400, media_type="application/json")
+        else:
+            content = jsonable_encoder(FindProjectByUserIdResponse(
+                message="below are projects found",
+                projects=res
+            ))
+            return JSONResponse(content=content, status_code=200, media_type="application/json")
