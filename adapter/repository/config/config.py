@@ -9,7 +9,7 @@ def get_database():
 
     client = MongoClient(CONNECTION_STRING)
     if (not (CONNECTION_STRING is None)) and ("mongodb+srv" in CONNECTION_STRING):
-        client = MongoClient(CONNECTION_STRING, tlsCAFile=ca)
+        client = MongoClient(CONNECTION_STRING)
     if not DB_NAME:
         DB_NAME = "ProjectService"
     return client[DB_NAME]
