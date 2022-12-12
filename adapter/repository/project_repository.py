@@ -102,6 +102,7 @@ class ProjectRepository:
         ret = []
         try:
             for project in res:
+                project["project_id"] = str(project["_id"])
                 ret.append(Project.parse_obj(project))
             return ret
         except ServerSelectionTimeoutError as e:
