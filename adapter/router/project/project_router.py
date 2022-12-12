@@ -7,7 +7,8 @@ from adapter.repository.config.config import get_database
 from adapter.router.project.project_handler import FindProjectByIdResponse, \
                                                     CreateProjectResponse, \
                                                     UpdateProjectResponse, \
-                                                    FindProjectPosterByIdResponse
+                                                    FindProjectPosterByIdResponse, \
+                                                    FindAllProjectsResponse
 
 from domain.project.project_entity import Project
 from domain.notification.notification_service import NotificationService
