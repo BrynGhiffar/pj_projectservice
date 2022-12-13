@@ -124,4 +124,11 @@ class ProjectService:
             return DatabaseConnectionError(projects.extra_message)
         
         return projects
+
+    def find_projects_by_name(self, project_title: str) -> list[Project] | ProjectServiceError:
+        projects = self.project_repository.find_projects_by_name(project_title)
+        if isinstance(projects, TimeoutConnectionError):
+            return DatabaseConnectionError(projects.extra_message)
+        
+        return projects
         
