@@ -121,7 +121,7 @@ def find_project_poster_by_id(project_id: str):
 def find_project_by_user_id(user_id: str):
     return project_handler.find_project_by_user_id(user_id)
 
-@router.get("/project/all")
+@router.get("/")
 def find_all_projects():
     return project_handler.find_all_projects()
 
