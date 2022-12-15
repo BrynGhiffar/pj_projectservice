@@ -37,6 +37,10 @@ class FindAllProjectsResponse(BaseModel):
     message: str
     projects: list[Project] | None
 
+class FindProjectsByName(BaseModel):
+    message: str
+    projects: list[Project] | None
+
 class ProjectHandler:
     
     def __init__(self, project_service: ProjectService):
@@ -195,6 +199,29 @@ class ProjectHandler:
         else:
             content = jsonable_encoder(FindAllProjectsResponse(
                 message="below are all of the projects found",
+                projects=res
+            ))
+            return JSONResponse(content=content, status_code=200, media_type="application/json")
+
+    def find_projects_by_name(self, project_title: str) -> JSONResponse:
+        
+        res = self.project_service.find_projects_by_name(project_title)
+        if isinstance(res, ProjectServiceErrorExtra):
+            content = jsonable_encoder(CreateProjectResponse(
+                message=f"{res.name}: {res.message}. {res.extra_message}",
+                project=None
+            ))
+            return JSONResponse(content=content, status_code=500, media_type="application/json")
+        
+        elif isinstance(res, ProjectServiceError):
+            update_project_response = jsonable_encoder(FindProjectByIdResponse(
+                message=f"{res.name}: {res.message}",
+                project=None
+            ))
+            return JSONResponse(content=update_project_response, status_code=400, media_type="application/json")
+        else:
+            content = jsonable_encoder(FindProjectsByName(
+                message="below are projects found",
                 projects=res
             ))
             return JSONResponse(content=content, status_code=200, media_type="application/json")
