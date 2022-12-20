@@ -118,8 +118,8 @@ class ProjectRepository:
         try:
             total_found = len(list(res.clone()))
             counter = (page - 1) * projects_per_page
-            for project in res:
-                if (counter >= projects_per_page or counter >= total_found):
+            for project in res[counter:total_found]:
+                if (counter >= (projects_per_page * page) or counter >= total_found):
                     break
                 if project_title.lower() in str(project['name']).lower() :
                     project["project_id"] = str(project["_id"])
