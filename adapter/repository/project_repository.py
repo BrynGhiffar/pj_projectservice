@@ -116,13 +116,15 @@ class ProjectRepository:
             return TimeoutConnectionError(extra_message=e._message)
         ret = []
         try:
+            total_found = len(list(res.clone()))
             counter = (page - 1) * projects_per_page
-            while counter < projects_per_page:
-                if project_title.lower() in str(res[counter]["name"]).lower():
-                    # res[counter]["project_id"] = str(res[counter]["_id"])
-
-                    ret.append(Project.parse_obj(res[counter]))
-                    counter += 1
+            for project in res:
+                if (counter >= projects_per_page or counter >= total_found):
+                    break
+                if project_title.lower() in str(project['name']).lower() :
+                    project["project_id"] = str(project["_id"])
+                    ret.append(Project.parse_obj(project))
+                counter += 1
 
             return (ret)
         except ServerSelectionTimeoutError as e:
