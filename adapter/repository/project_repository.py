@@ -108,7 +108,7 @@ class ProjectRepository:
         except ServerSelectionTimeoutError as e:
             return TimeoutConnectionError(extra_message=e._message)
 
-    def find_projects_by_name(self, project_title: str) -> list[Project] \
+    def find_projects_by_name(self, project_title: str, page:int, projects_per_page: int) -> list[Project]\
                                                     | TimeoutConnectionError:
         try:
             res = self.get_project_collection().find()
@@ -116,10 +116,14 @@ class ProjectRepository:
             return TimeoutConnectionError(extra_message=e._message)
         ret = []
         try:
-            for project in res:
-                if project_title.lower() in str(project["name"]).lower():
-                    project["project_id"] = str(project["_id"])
-                    ret.append(Project.parse_obj(project))
-            return ret
+            counter = (page - 1) * projects_per_page
+            while counter < projects_per_page:
+                if project_title.lower() in str(res[counter]["name"]).lower():
+                    # res[counter]["project_id"] = str(res[counter]["_id"])
+
+                    ret.append(Project.parse_obj(res[counter]))
+                    counter += 1
+
+            return (ret)
         except ServerSelectionTimeoutError as e:
             return TimeoutConnectionError(extra_message=e._message)
