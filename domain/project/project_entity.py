@@ -19,7 +19,7 @@ class Project(BaseModel):
     description: str = Field(description="The description of the project in the form of markdown")
     youtube_link: str = Field(description="Link to project youtube video")
     github_link: str = Field(description="Link to github project")
-    grade : int = Field(description="Project Grade")
+    grade : int | None = Field(description="Project Grade")
     course_code : str = Field(description="Course code of the class")
     lecturer_name : str = Field(description="Lecturer name")
     lecturer_comment : str = Field(description="Lecturer comments on the project")
