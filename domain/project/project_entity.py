@@ -22,3 +22,4 @@ class Project(BaseModel):
     grade : int = Field(description="Project Grade")
     course_code : str = Field(description="Course code of the class")
     lecturer_name : str = Field(description="Lecturer name")
+    lecturer_comment : str = Field(description="Lecturer comments on the project")
