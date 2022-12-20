@@ -123,6 +123,8 @@ class ProjectRepository:
                     break
                 if project_title.lower() in str(project['name']).lower() :
                     project["project_id"] = str(project["_id"])
+                    project["projects_total"] = total_found
+                    project["page_projects_total"] = counter + 1
                     ret.append(Project.parse_obj(project))
                 counter += 1
 

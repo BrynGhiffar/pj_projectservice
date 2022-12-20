@@ -19,3 +19,5 @@ class Project(BaseModel):
     description: str = Field(description="The description of the project in the form of markdown")
     youtube_link: str = Field(description="Link to project youtube video")
     github_link: str = Field(description="Link to github project")
+    projects_total: int | None = Field(description="total of the projects found using the parameter of each function call that needed this")
+    page_projects_total: int | None = Field(description="total of the projects found using the parameter of each function call that needed this per page")
