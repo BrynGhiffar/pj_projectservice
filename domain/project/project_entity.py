@@ -10,7 +10,7 @@ class ProjectFile(BaseModel):
 
 class Project(BaseModel):
     project_id: str | None = Field(description="unique id of each project")
-    class_id: str = Field(description="id of class")
+    class_id: str | None = Field(description="id of class")
     name: str = Field(description="Name of the project")
     members: List[str] = Field(description="List of member ids, where each member is a user")
     poster_image: ProjectFile = Field(description="Poster image in the form of png, jpeg")
@@ -20,7 +20,6 @@ class Project(BaseModel):
     youtube_link: str = Field(description="Link to project youtube video")
     github_link: str = Field(description="Link to github project")
     projects_total: int | None = Field(description="total of the projects found using the parameter of each function call that needed this")
-    page_projects_total: int | None = Field(description="total of the projects found using the parameter of each function call that needed this per page")
     grade : int | None = Field(description="Project Grade")
-    lecturer_id : str = Field(description="Lecturer id")
-    lecturer_comment : str = Field(description="Lecturer comments on the project")
+    lecturer_id : str | None = Field(description="Lecturer id")
+    lecturer_comment : str | None = Field(description="Lecturer comments on the project")
