@@ -21,3 +21,6 @@ class Project(BaseModel):
     github_link: str = Field(description="Link to github project")
     projects_total: int | None = Field(description="total of the projects found using the parameter of each function call that needed this")
     page_projects_total: int | None = Field(description="total of the projects found using the parameter of each function call that needed this per page")
+    grade : int | None = Field(description="Project Grade")
+    lecturer_id : str = Field(description="Lecturer id")
+    lecturer_comment : str = Field(description="Lecturer comments on the project")
