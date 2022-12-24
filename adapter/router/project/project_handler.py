@@ -3,7 +3,6 @@ from fastapi import UploadFile
 from fastapi.responses import JSONResponse, StreamingResponse
 from fastapi.encoders import jsonable_encoder
 from domain.project.project_service import ProjectService
-
 from domain.project.project_service import ProjectServiceError, ProjectServiceErrorExtra
 from domain.project.project_entity import Project
 from pydantic import BaseModel
@@ -203,9 +202,9 @@ class ProjectHandler:
             ))
             return JSONResponse(content=content, status_code=200, media_type="application/json")
 
-    def find_projects_by_name(self, project_title: str) -> JSONResponse:
+    def find_projects_by_name(self, project_title: str, page: int, projects_per_page: int) -> JSONResponse:
         
-        res = self.project_service.find_projects_by_name(project_title)
+        res = self.project_service.find_projects_by_name(project_title, page, projects_per_page)
         if isinstance(res, ProjectServiceErrorExtra):
             content = jsonable_encoder(CreateProjectResponse(
                 message=f"{res.name}: {res.message}. {res.extra_message}",

@@ -125,7 +125,7 @@ def find_project_by_user_id(user_id: str):
 def find_all_projects():
     return project_handler.find_all_projects()
 
-@router.get("/project/{project_title}")
-def find_projects_by_name(project_title: str):
-    return project_handler.find_projects_by_name(project_title)
+@router.get("/project/")
+def find_projects_by_name(project_title: str = "", page: int = 1, projects_per_page: int = 2):
+    return project_handler.find_projects_by_name(project_title, page, projects_per_page)
 
