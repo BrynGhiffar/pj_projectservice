@@ -126,9 +126,17 @@ class ProjectService:
         return projects
 
     def find_projects_by_name(self, project_title: str, page: int, projects_per_page: int) -> list[Project] | ProjectServiceError:
-        projects = self.project_repository.find_projects_by_name(project_title, page, projects_per_page)
+        projects = self.project_repository.find_all_projects()
         if isinstance(projects, TimeoutConnectionError):
             return DatabaseConnectionError(projects.extra_message)
         
-        return projects
+        filt_projects = list(filter(lambda proj: project_title.lower() in proj.name.lower(), projects))
+        
+        index = page - 1
+        start = projects_per_page * index
+        end = projects_per_page * (index + 1)
+        n = len(filt_projects)
+        for p in filt_projects[start:end]:
+            p.projects_total = n
+        return filt_projects[start:end]
         
