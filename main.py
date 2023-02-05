@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 
 import os
 
-load_dotenv()
+# load_dotenv()
 BASE_PATH = os.getenv("BASE_PATH")
 VERSION_1 = os.getenv("VERSION_1")
 FE_URL = os.getenv("FE_URL")
